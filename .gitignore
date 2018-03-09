@@ -1,3 +1,5 @@
 venv/
 src/config.py
 src/*.log
+
+src/__pycache__/
