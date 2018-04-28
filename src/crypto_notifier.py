@@ -3,15 +3,16 @@ import logging
 import time
 import config
 
-
 LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(format=LOG_FORMAT, filename='logfile.log', level=logging.DEBUG)
+logging.basicConfig(format=LOG_FORMAT, filename='logfile.log',
+                    level=logging.DEBUG)
 log = logging.getLogger()
 
 
 class AbstractCryptoWrapper:
     BASE_API_URL = 'https://api.coinmarketcap.com/v1/ticker/'
-    IFTTT_WEBHOOKS_URL = 'https://maker.ifttt.com/trigger/{event}/with/key/{IFTTT_key}'
+    IFTTT_WEBHOOKS_URL = 'https://maker.ifttt.com/trigger/{event}/with/key/{' \
+                         'IFTTT_key}'
 
     def __init__(self, crypto, threshold_price):
         self._crypto = crypto
@@ -35,13 +36,15 @@ class AbstractCryptoWrapper:
 
     def _post_ifttt_webhook(self, event, price):
         # The payload that will be sent to IFTTT service
-        data = {'value1': self._crypto.title(), 'value2': price,
-                'value3': self._crypto}
+        data = {
+            'value1': self._crypto.title(), 'value2': price,
+            'value3': self._crypto
+        }
         # inserts our desired event
         ifttt_event_url = AbstractCryptoWrapper.IFTTT_WEBHOOKS_URL.format(
-            event=event,
-            IFTTT_key=getattr(config, 'IFTTT_KEY')
-          )
+                event=event,
+                IFTTT_key=getattr(config, 'IFTTT_KEY')
+        )
         if data.get('value2') is not None:
             # Sends a HTTP POST request to the webhook URL
             requests.post(ifttt_event_url, json=data)
@@ -50,12 +53,12 @@ class AbstractCryptoWrapper:
 
 class BitcoinWrapper(AbstractCryptoWrapper):
     def __init__(self):
-        super(BitcoinWrapper, self).__init__('bitcoin', 10000)
+        super(BitcoinWrapper, self).__init__('bitcoin', 15000)
 
 
 class EthereumWrapper(AbstractCryptoWrapper):
     def __init__(self):
-        super(EthereumWrapper, self).__init__('ethereum', 10000)
+        super(EthereumWrapper, self).__init__('ethereum', 700)
 
 
 if __name__ == '__main__':
@@ -65,7 +68,3 @@ if __name__ == '__main__':
 
         # Sleep for 5 minutes
         time.sleep(5 * 60)
-
-
-
-
